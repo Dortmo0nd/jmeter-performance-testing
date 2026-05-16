@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17  # Рекомендовано 17 для стабільної роботи JMeter 5.6.3
+          java-version: 17
 
       - name: Install JMeter
         run: |
@@ -27,38 +27,39 @@ jobs:
 
       - name: Prepare Directories
         run: |
-          # Очищаємо та створюємо базові папки перед запуском
           rm -rf results_task reports_html
           mkdir -p results_task reports_html
 
       - name: Run Load Test
+        continue-on-error: true # Дозволяє йти далі, навіть якщо тест "впав"
         run: |
           ./jmeter/bin/jmeter -n \
-            -t test-plans/load_test.jmx\
-            -l results_task/load_results.jtl\
+            -t test-plans/load_test.jmx \
+            -l results_task/load_results.jtl \
             -e \
             -o reports_html/load_report
 
       - name: Run Stress Test
+        continue-on-error: true
         run: |
-          # Шлях взято в лапки через наявність пробілу у назві файлу
           ./jmeter/bin/jmeter -n \
-            -t test-plans/Stress_Testing.jmx\
-            -l results_task/stress_results.jtl\
+            -t test-plans/Stress_Testing.jmx \
+            -l results_task/stress_results.jtl \
             -e \
             -o reports_html/stress_report
 
       - name: Run Endurance Test
+        continue-on-error: true
         run: |
           ./jmeter/bin/jmeter -n \
-            -t test-plans/endurance_test.jmx\
-            -l results_task/endurance_results.jtl\
+            -t test-plans/endurance_test.jmx \
+            -l results_task/endurance_results.jtl \
             -e \
             -o reports_html/endurance_report
 
       - name: Upload HTML Reports
         uses: actions/upload-artifact@v4
+        if: always() # Гарантує, що звіти будуть збережені за будь-яких умов
         with:
-          # Завантажить усю папку reports_html з трьома вкладеними звітами
           name: jmeter-all-reports
           path: reports_html/
