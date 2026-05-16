@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 23
 
       - name: Install JMeter
         run: |
@@ -29,13 +29,13 @@ jobs:
         run: |
           mkdir -p results reports
           ./jmeter/bin/jmeter -n \
-            -t test-plans/load_test.jmx \
+            -t test-plans/load_test.jmx\
             -l results/results.jtl \
             -e \
-            -o reports/html-report
+            -o reports/html_report_basic
 
       - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: jmeter-html-report
-          path: reports/html-report
+          path: reports/html_report_basic
