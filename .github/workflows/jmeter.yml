@@ -27,13 +27,16 @@ jobs:
 
       - name: Run JMeter Test
         run: |
-          # Створюємо твої нові папки
+          # 1. Видаляємо папки, якщо вони існують, щоб вони були гарантовано порожніми
+          rm -rf results_task reports_html
+          
+          # 2. Створюємо їх заново (mkdir -p не видасть помилку, якщо папка вже є)
           mkdir -p results_task reports_html
           
-          # Запускаємо тест із новими шляхами
+          # 3. Запускаємо JMeter
           ./jmeter/bin/jmeter -n \
-            -t test-plans/load_test.jmx\
-            -l results_task/results.jtl\
+            -t test-plans/load_test.jmx \
+            -l results_task/results.jtl \
             -e \
             -o reports_html
 
