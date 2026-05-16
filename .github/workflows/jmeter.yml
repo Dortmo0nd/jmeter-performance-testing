@@ -25,23 +25,40 @@ jobs:
           tar -xzf apache-jmeter-5.6.3.tgz
           mv apache-jmeter-5.6.3 jmeter
 
-      - name: Run JMeter Test
+      - name: Prepare Directories
         run: |
-          # 1. Видаляємо папки, якщо вони існують, щоб вони були гарантовано порожніми
+          # Очищаємо та створюємо базові папки перед запуском
           rm -rf results_task reports_html
-          
-          # 2. Створюємо їх заново (mkdir -p не видасть помилку, якщо папка вже є)
           mkdir -p results_task reports_html
-          
-          # 3. Запускаємо JMeter
-          ./jmeter/bin/jmeter -n \
-            -t test-plans/load_test.jmx \
-            -l results_task/results.jtl \
-            -e \
-            -o reports_html
 
-      - name: Upload HTML Report
+      - name: Run Load Test
+        run: |
+          ./jmeter/bin/jmeter -n \
+            -t test-plans/load_test.jmx\
+            -l results_task/load_results.jtl\
+            -e \
+            -o reports_html/load_report
+
+      - name: Run Stress Test
+        run: |
+          # Шлях взято в лапки через наявність пробілу у назві файлу
+          ./jmeter/bin/jmeter -n \
+            -t test-plans/Stress_Testing.jmx\
+            -l results_task/stress_results.jtl\
+            -e \
+            -o reports_html/stress_report
+
+      - name: Run Endurance Test
+        run: |
+          ./jmeter/bin/jmeter -n \
+            -t test-plans/endurance_test.jmx\
+            -l results_task/endurance_results.jtl\
+            -e \
+            -o reports_html/endurance_report
+
+      - name: Upload HTML Reports
         uses: actions/upload-artifact@v4
         with:
-          name: jmeter-html-report
-          path: reports_html
+          # Завантажить усю папку reports_html з трьома вкладеними звітами
+          name: jmeter-all-reports
+          path: reports_html/
