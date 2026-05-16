@@ -30,12 +30,11 @@ jobs:
           mkdir -p results reports
           ./jmeter/bin/jmeter -n \
             -t test-plans/load_test.jmx\
-            -l results/results.jtl \
+            -l results/results.jtl\
             -e \
             -o reports/html_rep
 
-      - name: Upload HTML Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: jmeter-html-report
-          path: reports/html_rep
+      - name: Run JMeter Test
+        run: |
+          mkdir -p results reports
+          ./jmeter/bin/jmeter -n -t test-plans/load_test.jmx -l results/results.jtl -e -o reports/html_rep
